@@ -1,1 +1,222 @@
-
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- title of game -->
+    <title>Snakes and Ladders</title>
+    <!-- applying different fonts to the text -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto"
+      rel="stylesheet"
+    />
+    <!-- apply margin and padding -->
+    <style>
+      * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  /* background colour */
+  body {
+    background: #1f1a25;
+  }
+  /* enhancing board's appearance */
+  /* it includes board's position, height, width, etc... */
+  .board {
+    position: absolute;
+    transform: translate(-15%, 0);
+    top: 5%;
+    left: 15%;
+    height: 90vh;
+    width: 90vh;
+    background: url("../images/board.png");
+    background-size: contain;
+    z-index: 1;
+  }
+  /* container's position is set */
+  .container {
+    position: absolute;
+    transform: translate(-15%, 0);
+    top: 5%;
+    left: 15%;
+    width: 90vh;
+    height: 90vh;
+    z-index: 1;
+  }
+  /* position of dice is set in the bottom-left side of the screen */
+  .dice {
+    position: absolute;
+    right: 25%;
+    bottom: 10%;
+  }
+  
+  .dice img {
+    width: 70%;
+    height: auto;
+  }
+  /* drawing border to indicate whos turn is to roll the dice */
+  .draw-border {
+    box-shadow: inset 0 0 0 4px #58afd1;
+    color: #58afd1;
+    transition: color 0.25s 0.0833333333s;
+    position: relative;
+  }
+/* seperate border colours are set to indicate before and after rolling */
+  .draw-border::before,
+  .draw-border::after {
+    border: 0 solid transparent;
+    box-sizing: border-box;
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    width: 0;
+    height: 0;
+    bottom: 0;
+    right: 0;
+  }
+/* width is set for the border */
+  .draw-border::before {
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+  }
+  .draw-border::after {
+    border-top-width: 4px;
+    border-right-width: 4px;
+  }
+  .draw-border:hover {
+    color: #ffe593;
+  }
+  .draw-border:hover::before,
+  .draw-border:hover::after {
+    border-color: #ffe593;
+    transition: border-color 0s, width 0.25s, height 0.25s;
+    width: 100%;
+    height: 100%;
+  }
+/* transition delay time is set for showing the highlight border */
+  .draw-border:hover::before {
+    transition-delay: 0s, 0s, 0.25s;
+  }
+  .draw-border:hover::after {
+    transition-delay: 0s, 0.25s, 0s;
+  }
+  /*  setting the features for the button. */
+  .btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1.5;
+    padding: 1em 2em;
+    font: 700 1.2rem "Roboto Slab", sans-serif;
+    letter-spacing: 0.05rem;
+  }
+  .btn:focus {
+    outline: 2px dotted #55d7dc;
+  }
+  /* this roll-button gives the dice it's feature to roll and pick a random number */
+  #roll-button {
+    position: absolute;
+    right: 18%;
+    bottom: 16%;
+  }
+  /* input area- to get the details from the player */
+  .form-input {
+    font-family: "Roboto", sans-serif;
+    color: #333;
+    font-size: 1.3rem;
+    padding: 1.5rem 2rem;
+    position: absolute;
+    top: 10%;
+    right: 19%;
+    border-radius: 0.4rem;
+    background-color: rgb(240, 233, 233);
+    border: none;
+    width: 20%;
+    display: block;
+    transition: all 0.5s;
+  }
+  /* start button is set- on clicking the start button the game begins */
+  #start-btn {
+    position: absolute;
+    top: 11%;
+    right: 8%;
+    font-size: 1rem;
+  }
+  /* player's box- the position if the player  in the board. */
+  #players-box {
+    position: absolute;
+    top: 25%;
+    right: 19%;
+    color: azure;
+    font-size: 1.6rem;
+    font-family: "Roboto Slab", sans-serif;
+  }
+  /*  who is the ccurrent player will be denoted in the below mentioned format and position */
+  #current-player {
+    position: absolute;
+    bottom: 35%;
+    right: 25%;
+    color: azure;
+    font-size: 1.4rem;
+    font-family: "Roboto Slab", sans-serif;
+    text-align: center;
+  }
+  /* restart button is used to restart the gam from the beginning if you don't think the game comes to an end if it continues */
+  /* this restart button is also used when we need to play the game after one game is over and the winner is announced */
+ #restart-btn {
+    position: absolute;
+    right: 20%;
+    bottom: 16%;
+  }
+  /* players table shows the name of the players who are all playing the game. it's width and height is set */
+  #players-table img {
+    height: 40px;
+    width: 30px;
+  }
+  #players-table td {
+    padding-right: 20px;
+  }
+    </style>
+  </head>
+  <body>
+    <div class="board"></div>
+    <!-- importing the image of the board, and the indication mark for four players with different colours -->
+    <img src="images/red_piece.png" alt="" hidden="true" id="red-piece" />
+    <img src="images/blue_piece.png" alt="" hidden="true" id="blue-piece" />
+    <img src="images/yellow_piece.png" alt="" hidden="true" id="yellow-piece" />
+    <img src="images/green_piece.png" alt="" hidden="true" id="green-piece" />
+    <div class="container">
+      <canvas id="canvas"></canvas>
+    </div>
+    <div class="info-box">
+      <div class="form-group">
+        <input
+          type="text"
+          class="form-input"
+          id="name"
+          placeholder="Your name"
+          required
+        />
+<!-- join button to join the game -->
+        <button class="btn draw-border" id="start-btn">Join</button>
+      </div>
+    </div>
+<!-- we will be calling all the functions that we defined earlier -->
+    <div id="players-box">
+      <h3>Players currently online:</h3>
+      <br>
+      <table id="players-table"></table>
+    </div>
+    <div id="current-player"></div>
+    <button class="btn draw-border" id="roll-button" hidden>Roll</button>
+    <div class="dice">
+<!-- importing the imag of the dice -->
+      <img src="./images/dice/dice1.png" alt="" id="dice" />
+    </div>
+    <button class="btn draw-border" id="restart-btn" hidden>Restart</button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/index.js"></script>
+<!-- connecting with js files -->
+  </body>
+</html>
